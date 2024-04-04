@@ -147,8 +147,19 @@ function memoize(func) {
  * }, 2);
  * retryer() => 2
  */
-function retry(/* func, attempts */) {
-  throw new Error('Not implemented');
+function retry(func, attempts) {
+  let step = attempts;
+  return function retryFunc() {
+    try {
+      return func();
+    } catch (error) {
+      step -= 1;
+      if (step > 0) {
+        return retryFunc();
+      }
+      throw new Error('test');
+    }
+  };
 }
 
 /**
@@ -191,8 +202,10 @@ function logger(/* func, logFunc */) {
  *   partialUsingArguments(fn, 'a','b','c')('d') => 'abcd'
  *   partialUsingArguments(fn, 'a','b','c','d')() => 'abcd'
  */
-function partialUsingArguments(/* fn, ...args1 */) {
-  throw new Error('Not implemented');
+function partialUsingArguments(fn, ...args1) {
+  return function carry(...moreArgs) {
+    return fn.apply(this, args1.concat(moreArgs));
+  };
 }
 
 /**
@@ -212,8 +225,14 @@ function partialUsingArguments(/* fn, ...args1 */) {
  *   getId4() => 7
  *   getId10() => 11
  */
-function getIdGeneratorFunction(/* startFrom */) {
-  throw new Error('Not implemented');
+function getIdGeneratorFunction(startFrom) {
+  let currentId = startFrom;
+
+  return function getIdGenerator() {
+    const nextId = currentId;
+    currentId += 1;
+    return nextId;
+  };
 }
 
 module.exports = {
